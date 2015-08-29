@@ -31,15 +31,7 @@ if not exist "%binpath%\.launcher.init" (
 		goto INSTALLED
 	)	
 	setx PATH "%binpath%"
-
-:INSTALLED	
-	echo .
-	echo . > "%binpath%\.launcher.init"
-	echo The path %binpath% has been added to PATH
-	echo Relaunch command terminal to start using launcher
-	echo .
-	pause
-	exit
+	goto INSTALLED
 )
 
 rem Show help if no args given
@@ -73,7 +65,8 @@ if exist "%binpath%\%alias%.bat" (
 )
 
 rem  Add a .bat to wrap around the targetFile
-echo start "" "%target%" %%* > "%binpath%\%alias%.bat"
+echo @echo off > "%binpath%\%alias%.bat"
+echo start "" "%target%" %%* >> "%binpath%\%alias%.bat"
 if not exist "%binpath%\%alias%.bat" (
 	echo Couldnot create launcher
 	goto END
@@ -84,6 +77,15 @@ echo Target:  %target%
 echo .
 goto END 
 
+:INSTALLED	
+echo .
+echo . > "%binpath%\.launcher.init"
+echo The path %binpath% has been added to PATH
+echo Relaunch command terminal to start using launcher
+echo .
+pause
+exit
+
 :SHOWHELP
 echo Usage:
 echo launcher targetFile alias
@@ -93,8 +95,8 @@ echo              [Optional, defaults to name of targetFile]
 echo .
 
 :END
+rem cleanup vars
 set newpath=
 set binpath=
 set target=
 set alias=
-set cpath=
